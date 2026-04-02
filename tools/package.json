@@ -1,0 +1,15 @@
+{
+  "name": "bmad-ux-visualizer-tools",
+  "version": "1.0.0",
+  "description": "Tools for bmad-ux-visualizer extension pack — wires Penpot prototype interactions via REST API",
+  "type": "module",
+  "scripts": {
+    "wire-flows": "node flow-wirer.js"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

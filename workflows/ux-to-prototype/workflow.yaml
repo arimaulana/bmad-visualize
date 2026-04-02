@@ -1,0 +1,141 @@
+id: ux-to-prototype
+name: UX to Prototype
+module: ux-visualizer
+description: >
+  Full workflow from BMAD documents (or a brainstorm) to a clickable Penpot prototype.
+  Supports two modes: doc-first and prototype-first.
+  Covers design system, screen building, interaction wiring, and validation gate — before Epic & Stories.
+
+modes:
+  doc-first:
+    description: >
+      Start from existing BMAD documents. UX spec is required.
+      PRD and architecture docs are optional.
+    required_inputs:
+      - docs/ux-spec.md
+    optional_inputs:
+      - docs/prd.md
+      - docs/architecture.md
+      - docs/system-design.md
+      - docs/tech-stack.md
+
+  prototype-first:
+    description: >
+      Start from a brainstorm doc (free-form notes, bullet points, rough ideas).
+      No UX spec, PRD, or architecture doc needed upfront.
+      Agent runs elicitation first, then infers the full spec before building.
+    required_inputs:
+      - docs/brainstorm.md   # any free-form document describing the idea
+    optional_inputs: []
+
+steps:
+
+  # ── Prototype-first only ──────────────────────────────────────────────
+  - id: intake
+    name: Intake & Elicitation
+    file: steps/00-intake.md
+    agent: ux-prototyper
+    mode: prototype-first
+    note: >
+      Agent reads brainstorm doc, runs structured elicitation with the user,
+      then infers and confirms prototype-spec.yaml and design-system-spec.yaml
+      before any building begins. User must explicitly approve the spec summary
+      before this step is marked complete.
+
+  # ── Both modes ────────────────────────────────────────────────────────
+  - id: analyze
+    name: Analyze
+    file: steps/01-analyze-docs.md
+    agents: [arch-visualizer, design-system-builder, ux-prototyper]
+    depends_on:
+      doc-first: []
+      prototype-first: [intake]
+    note: >
+      Doc-first: all three agents analyze source docs in parallel.
+      Prototype-first: agents do a review pass on the spec populated in Step 0.
+      arch-visualizer is skipped in prototype-first mode.
+
+  # ── Doc-first only (optional even in doc-first) ───────────────────────
+  - id: arch-diagrams
+    name: Generate Architecture Diagrams
+    file: steps/02-arch-diagrams.md
+    agent: arch-visualizer
+    mode: doc-first
+    skip_if: architecture docs not available
+    depends_on: [analyze]
+    output: docs/arch-diagrams.md
+    note: >
+      Runs in parallel with design-system step.
+      Skip entirely if architecture docs are not available.
+
+  # ── Both modes ────────────────────────────────────────────────────────
+  - id: design-system
+    name: Build UI Design System
+    file: steps/03-design-system.md
+    agent: design-system-builder
+    depends_on: [analyze]
+    output:
+      - Penpot Design System file
+      - docs/design-system.md
+    note: >
+      Runs in parallel with arch-diagrams (doc-first) or immediately after analyze (prototype-first).
+
+  - id: build-screens
+    name: Build Prototype Screens
+    file: steps/04-build-screens.md
+    agent: ux-prototyper
+    depends_on: [design-system]
+    output: Penpot Prototype file (screens built)
+
+  - id: wire-flows
+    name: Wire Prototype Interactions
+    file: steps/05-wire-flows.md
+    agent: ux-prototyper
+    depends_on: [build-screens]
+    tool: tools/flow-wirer.js
+    output: Clickable Penpot prototype
+
+  - id: validation-gate
+    name: Validation Gate
+    file: steps/06-validation-gate.md
+    agent: ux-prototyper
+    depends_on: [wire-flows]
+    output: docs/prototype-validation.md
+    note: >
+      Two feedback points exist before this step:
+      - Prototype-first only: elicitation loop in Step 0 (before any building)
+      - Both modes: this validation gate (after prototype is fully built)
+
+  - id: revise-or-proceed
+    name: Revise or Proceed
+    file: steps/07-revise-or-proceed.md
+    agent: ux-prototyper
+    depends_on: [validation-gate]
+
+feedback_loop:
+  condition: validation_gate == REVISE
+  return_to:
+    - analyze       # if spec or source docs need significant changes
+    - design-system # if design system needs updates
+    - build-screens # if only screens need rebuilding
+    - wire-flows    # if only interactions are wrong
+  note: >
+    The agent identifies the re-entry point based on the nature of the revision.
+    Doc-level changes → restart from analyze.
+    Screen-level changes → restart from build-screens.
+    Interaction-only fixes → restart from wire-flows.
+    Minor fixes → fix in Penpot directly, re-run validation-gate.
+    Prototype-first: if fundamental flow is wrong, return to intake and re-run elicitation.
+
+on_complete:
+  doc-first:
+    handoff: >
+      Prototype validated. Hand off to BMAD Story and Epic agents.
+      Share docs/prototype-validation.md and the Penpot share link.
+      Include docs/arch-diagrams.md if Step 2 was run.
+  prototype-first:
+    handoff: >
+      Prototype validated. Next: run BMAD PM agent to write PRD from the validated prototype,
+      then BMAD Architect agent to write architecture doc.
+      Share docs/prototype-validation.md and the Penpot share link as inputs to the PM agent.
+      After PRD and architecture are complete, proceed to BMAD Story and Epic agents.

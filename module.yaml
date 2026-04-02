@@ -1,0 +1,29 @@
+code: ux-visualizer
+name: UX Visualizer
+version: 1.0.0
+description: >
+  Fills the BMAD visualization gap between UX docs and Epic & Stories.
+  Generates C4 architecture diagrams, builds a full UI design system in Penpot,
+  and creates clickable prototypes — all before implementation begins.
+
+slashPrefix: ux-visualizer
+
+configPrompts:
+  - name: penpot_url
+    type: text
+    default: http://localhost:9001
+    description: URL of your self-hosted Penpot instance (e.g. http://localhost:9001)
+
+  - name: penpot_token
+    type: text
+    description: >
+      Penpot API access token.
+      Generate one at: Penpot → Your Profile → Access Tokens
+
+agents:
+  - arch-visualizer
+  - design-system-builder
+  - ux-prototyper
+
+workflows:
+  - ux-to-prototype

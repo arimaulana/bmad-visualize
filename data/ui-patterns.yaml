@@ -1,0 +1,214 @@
+# UI Patterns Reference
+# Used by @design-system-builder and @ux-prototyper as a pattern library.
+# Describes common UI patterns, their anatomy, and when to use them.
+
+# -----------------------------------------------------------------------
+# NAVIGATION PATTERNS
+# -----------------------------------------------------------------------
+
+navigation:
+  top_navbar:
+    description: "Horizontal navigation bar fixed at the top of the viewport"
+    best_for: ["web apps", "marketing sites", "dashboards with few top-level sections"]
+    anatomy:
+      - logo: "Left side, links to home"
+      - nav_links: "Center or right, 3–7 primary destinations"
+      - actions: "Far right — CTA button, notifications, user avatar"
+    behavior:
+      - active_link: "Underline or color indicator on current page"
+      - mobile: "Collapses to hamburger menu"
+
+  sidebar_nav:
+    description: "Vertical navigation panel on the left side"
+    best_for: ["complex dashboards", "apps with many sections", "admin panels"]
+    anatomy:
+      - logo: "Top of sidebar"
+      - nav_items: "Icon + label, stacked vertically"
+      - section_groups: "Optional group headers to organize items"
+      - user_section: "Bottom — avatar, name, settings, logout"
+    states:
+      - expanded: "Icon + label visible (240px wide)"
+      - collapsed: "Icons only (64px wide)"
+
+  breadcrumbs:
+    description: "Shows current location in hierarchy"
+    best_for: ["deep navigation structures", "multi-step flows"]
+    anatomy: "Home > Section > Subsection > Current Page"
+    separator: "/ or >"
+
+  tabs:
+    description: "Switches between views within the same context"
+    best_for: ["switching between related content", "settings pages", "profile sections"]
+    anatomy:
+      - tab_items: "Labels only or icon + label"
+      - active_indicator: "Bottom border or background highlight"
+      - content_area: "Below tabs"
+
+  pagination:
+    description: "Navigates through multiple pages of results"
+    anatomy:
+      - prev_button: "← Previous"
+      - page_numbers: "Show current ± 2 pages"
+      - next_button: "Next →"
+      - count_label: "Showing 1–20 of 143 results"
+
+# -----------------------------------------------------------------------
+# FORM PATTERNS
+# -----------------------------------------------------------------------
+
+forms:
+  single_step_form:
+    description: "All fields visible at once, single submit action"
+    best_for: ["login", "simple data entry", "settings with few fields"]
+    anatomy:
+      - form_title: "H3 heading"
+      - fields: "Label above, input below, helper text if needed"
+      - submit: "Primary button at bottom"
+      - secondary_action: "Ghost or link — cancel, forgot password"
+    validation:
+      timing: "On blur (when user leaves field) + on submit"
+      error_placement: "Below the field in error color"
+
+  multi_step_form:
+    description: "Breaks long forms into sequential steps"
+    best_for: ["onboarding", "checkout", "complex configuration"]
+    anatomy:
+      - step_indicator: "Top — Step 1 of 3 or numbered circles"
+      - current_step_fields: "Only current step visible"
+      - navigation: "Back (secondary) + Continue/Next (primary)"
+      - progress_summary: "Optional sidebar showing all steps"
+
+  search_bar:
+    description: "Text input for filtering or finding content"
+    anatomy:
+      - search_icon: "Left inside input"
+      - placeholder: '"Search..." or specific hint like "Search by name or email"'
+      - clear_button: "X on right when has value"
+      - results: "Dropdown below or separate results page"
+
+  filter_panel:
+    description: "Controls for filtering a list or table"
+    types:
+      - inline: "Filter controls above the list/table"
+      - sidebar: "Filter panel on the left of content"
+      - drawer: "Slides in from right on mobile"
+
+# -----------------------------------------------------------------------
+# DATA DISPLAY PATTERNS
+# -----------------------------------------------------------------------
+
+data_display:
+  data_table:
+    description: "Tabular display of structured data"
+    anatomy:
+      - column_headers: "Label + optional sort indicator"
+      - rows: "Data cells aligned to column type (text left, numbers right)"
+      - row_actions: "Inline actions or kebab menu at row end"
+      - bulk_actions: "Appear when rows are selected"
+      - pagination: "Below table"
+      - empty_state: "Illustration + message + CTA when no rows"
+    density:
+      - comfortable: "Generous row height (52–56px)"
+      - compact: "Tight row height (36–40px)"
+
+  stat_card:
+    description: "Displays a single metric or KPI"
+    anatomy:
+      - label: "Metric name, subdued"
+      - value: "Large, prominent number or text"
+      - change: "Optional — +12% vs last period"
+      - sparkline: "Optional — mini trend chart"
+
+  list:
+    description: "Vertical list of items"
+    types:
+      - simple: "Title only or title + subtitle"
+      - rich: "Avatar/icon + title + subtitle + metadata + action"
+      - grouped: "Items organized under category headers"
+    interaction:
+      - selectable: "Checkbox per row"
+      - clickable: "Entire row navigates to detail"
+      - actionable: "Action buttons appear on hover"
+
+  empty_state:
+    description: "Shown when a list, table, or section has no content"
+    anatomy:
+      - illustration: "Simple icon or illustration (optional)"
+      - heading: "Short, friendly — 'No tasks yet'"
+      - description: "One sentence explanation or hint"
+      - cta: "Primary action to add first item"
+
+# -----------------------------------------------------------------------
+# FEEDBACK PATTERNS
+# -----------------------------------------------------------------------
+
+feedback:
+  toast_notification:
+    description: "Temporary message confirming an action or reporting a status"
+    types:
+      success: "Green — action completed"
+      error: "Red — action failed"
+      warning: "Yellow — caution or attention needed"
+      info: "Blue — neutral information"
+    anatomy:
+      - icon: "Left — matches type"
+      - message: "Brief, specific — 'Task created successfully'"
+      - dismiss: "X button on right (optional)"
+    placement: "Top-right or bottom-center"
+    duration: "3–5 seconds, persistent for errors"
+
+  inline_alert:
+    description: "Alert embedded within page content, not floating"
+    best_for: ["form-level errors", "important context before an action", "status messages"]
+    anatomy:
+      - icon: "Left"
+      - title: "Optional bold heading"
+      - message: "Description"
+      - action: "Optional link or button"
+
+  loading_states:
+    skeleton:
+      description: "Placeholder shapes while content loads"
+      best_for: "Initial page load, list items loading"
+    spinner:
+      description: "Rotating indicator for short operations"
+      best_for: "Button loading state, inline fetch"
+    progress_bar:
+      description: "Shows deterministic progress"
+      best_for: "File uploads, multi-step processes"
+
+# -----------------------------------------------------------------------
+# OVERLAY PATTERNS
+# -----------------------------------------------------------------------
+
+overlays:
+  modal:
+    description: "Dialog that blocks the rest of the UI until dismissed"
+    best_for: ["confirmations", "forms that need full focus", "detail views"]
+    anatomy:
+      - backdrop: "Semi-transparent overlay behind modal"
+      - container: "Centered card with max-width"
+      - header: "Title + close button"
+      - body: "Content"
+      - footer: "Actions — max 2 buttons"
+    dismiss: "Close button, backdrop click, or Escape key"
+
+  drawer:
+    description: "Panel that slides in from an edge"
+    best_for: ["filters on mobile", "detail panels", "navigation on mobile"]
+    origins: ["left", "right", "bottom"]
+
+  tooltip:
+    description: "Small floating label on hover"
+    best_for: "Explaining icons, showing full text for truncated content"
+    max_width: "240px"
+    trigger: "Hover or focus (keyboard accessible)"
+
+  dropdown_menu:
+    description: "List of actions triggered by a button"
+    best_for: ["overflow actions", "kebab menus", "select-like choices"]
+    anatomy:
+      - trigger: "Button with chevron or kebab icon"
+      - menu: "Floats below trigger, border + shadow"
+      - items: "Label only or icon + label"
+      - dividers: "Group related actions"

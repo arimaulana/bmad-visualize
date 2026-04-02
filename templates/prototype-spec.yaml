@@ -1,0 +1,104 @@
+# Prototype Specification
+# Populated by @ux-prototyper during *analyze
+# Used as input for *build (Penpot MCP) and tools/flow-wirer.js
+
+project:
+  name: ""
+  description: ""
+
+penpot:
+  file_id: ""                 # filled after *build creates the Penpot prototype file
+  file_name: ""
+  prototype_page: "All Screens"  # Penpot page name containing screens
+
+# -----------------------------------------------------------------------
+# SCREENS
+# Each screen becomes a Penpot frame. Name must be unique and exact —
+# flow-wirer.js uses exact string matching.
+# -----------------------------------------------------------------------
+
+screens:
+  - name: ""                  # exact Penpot frame name — e.g., "Login Screen"
+    page: "All Screens"       # Penpot page this frame lives on
+    device: desktop           # desktop | mobile | tablet
+    description: ""           # what the user does on this screen
+    entry_points: []          # screen names that navigate here
+    exit_points: []           # screen names user can go to from here
+    components:               # design system components used
+      - ""
+    content_notes: ""         # notes on realistic content to use
+
+# Example screens:
+# - name: "Login Screen"
+#   page: "All Screens"
+#   device: desktop
+#   description: "User enters credentials to access the app"
+#   entry_points: []
+#   exit_points: ["Dashboard", "Forgot Password Screen"]
+#   components: [Navbar, Input, Button]
+#   content_notes: "Use email + password fields, 'Sign in' as CTA"
+#
+# - name: "Dashboard"
+#   page: "All Screens"
+#   device: desktop
+#   description: "Main landing screen after login"
+#   entry_points: ["Login Screen"]
+#   exit_points: ["Profile Screen", "Settings Screen"]
+#   components: [Navbar, Card, Table]
+#   content_notes: "Show realistic metric cards and a data table with sample rows"
+
+# -----------------------------------------------------------------------
+# FLOWS
+# Each flow defines one prototype interaction.
+# source_frame and target_frame must exactly match screen names above.
+# trigger_element must exactly match the element name inside source_frame in Penpot.
+# -----------------------------------------------------------------------
+
+flows:
+  - name: ""                  # descriptive name — e.g., "Login → Dashboard"
+    source_frame: ""          # exact Penpot frame name of the source screen
+    trigger_element: ""       # exact name of the clickable element inside source_frame
+                              # leave empty to make the whole frame trigger
+    trigger: click            # click | hover | after-delay
+    target_frame: ""          # exact Penpot frame name of the destination screen
+    transition: dissolve      # dissolve | slide-left | slide-right | slide-up | slide-down | push
+    duration: 300             # transition duration in ms
+    easing: ease              # ease | ease-in | ease-out | ease-in-out | linear
+
+# Example flows:
+# - name: "Login → Dashboard"
+#   source_frame: "Login Screen"
+#   trigger_element: "Sign In Button"
+#   trigger: click
+#   target_frame: "Dashboard"
+#   transition: dissolve
+#   duration: 300
+#   easing: ease
+#
+# - name: "Login → Forgot Password"
+#   source_frame: "Login Screen"
+#   trigger_element: "Forgot password link"
+#   trigger: click
+#   target_frame: "Forgot Password Screen"
+#   transition: slide-left
+#   duration: 250
+#   easing: ease-out
+#
+# - name: "Dashboard → Profile"
+#   source_frame: "Dashboard"
+#   trigger_element: "User Avatar"
+#   trigger: click
+#   target_frame: "Profile Screen"
+#   transition: dissolve
+#   duration: 200
+#   easing: ease
+
+# -----------------------------------------------------------------------
+# DESIGN TOKENS (project-specific overrides)
+# These override the defaults in data/design-tokens.yaml
+# -----------------------------------------------------------------------
+
+design_tokens:
+  primary_color: ""           # hex — e.g., "#3B82F6"
+  font_family: ""             # e.g., "Inter"
+  border_radius_default: ""   # e.g., "8px"

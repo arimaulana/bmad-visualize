@@ -1,0 +1,31 @@
+{
+  "_comment": "Add the 'penpot' entry under mcpServers in your Claude Code settings.json",
+  "_settings_locations": [
+    "~/.claude/settings.json  (global — applies to all projects)",
+    ".claude/settings.json    (project-level — only this project)"
+  ],
+
+  "mcpServers": {
+    "penpot": {
+      "_comment_option_a": "Option A: ancrz/penpot-mcp-server — REST API, no browser extension needed",
+      "command": "npx",
+      "args": ["-y", "penpot-mcp-server"],
+      "env": {
+        "PENPOT_BASE_URL": "http://localhost:9001",
+        "PENPOT_ACCESS_TOKEN": "REPLACE_WITH_YOUR_TOKEN"
+      }
+    }
+  },
+
+  "_option_b": {
+    "_comment": "Option B: official @penpot/mcp — requires browser extension running in Penpot",
+    "penpot": {
+      "command": "npx",
+      "args": ["-y", "@penpot/mcp"],
+      "env": {
+        "PENPOT_BASEURL": "http://localhost:9001",
+        "PENPOT_ACCESS_TOKEN": "REPLACE_WITH_YOUR_TOKEN"
+      }
+    }
+  }
+}

@@ -1,0 +1,136 @@
+# Design System Specification
+# Populated by @design-system-builder during *analyze
+# Used as input for *build (Penpot) and *document (docs/design-system.md)
+
+project:
+  name: ""
+  design_system_name: ""
+  tone: ""                    # e.g., minimal, professional, playful, bold
+  platform: ""                # web | mobile | both
+
+penpot:
+  file_id: ""                 # filled after *build creates the file
+  file_name: ""
+  page_ids:
+    tokens: ""
+    components: ""
+
+# -----------------------------------------------------------------------
+# DESIGN TOKENS
+# -----------------------------------------------------------------------
+
+tokens:
+  colors:
+    primary:
+      "50":  ""
+      "100": ""
+      "200": ""
+      "300": ""
+      "400": ""
+      "500": ""               # main brand color
+      "600": ""
+      "700": ""
+      "800": ""
+      "900": ""
+
+    neutral:
+      "50":  ""
+      "100": ""
+      "200": ""
+      "300": ""
+      "400": ""
+      "500": ""
+      "600": ""
+      "700": ""
+      "800": ""
+      "900": ""
+
+    semantic:
+      success:
+        light: ""
+        main:  ""
+        dark:  ""
+      warning:
+        light: ""
+        main:  ""
+        dark:  ""
+      error:
+        light: ""
+        main:  ""
+        dark:  ""
+      info:
+        light: ""
+        main:  ""
+        dark:  ""
+
+    surface:
+      background:    ""
+      surface:       ""
+      surface_raised: ""
+      border:        ""
+      border_subtle: ""
+
+  typography:
+    font_family: ""           # e.g., Inter, Roboto
+    heading:
+      h1: { size: 32, weight: 700, line_height: 1.25 }
+      h2: { size: 24, weight: 700, line_height: 1.3  }
+      h3: { size: 20, weight: 600, line_height: 1.3  }
+      h4: { size: 18, weight: 600, line_height: 1.4  }
+    body:
+      large:   { size: 18, weight: 400, line_height: 1.6 }
+      default: { size: 16, weight: 400, line_height: 1.6 }
+      small:   { size: 14, weight: 400, line_height: 1.5 }
+    label:
+      default: { size: 14, weight: 500, line_height: 1.4 }
+      small:   { size: 12, weight: 500, line_height: 1.4 }
+    caption:
+      default: { size: 12, weight: 400, line_height: 1.4 }
+
+  spacing:
+    base: 4                   # base unit in px
+    scale: [4, 8, 12, 16, 20, 24, 32, 40, 48, 64, 80, 96]
+
+  border_radius:
+    none: 0
+    sm:   4
+    md:   8
+    lg:   12
+    xl:   16
+    full: 9999
+
+# -----------------------------------------------------------------------
+# COMPONENTS
+# -----------------------------------------------------------------------
+
+components:
+  button:
+    variants: [primary, secondary, ghost, destructive]
+    states: [default, hover, active, disabled]
+    penpot_component_id: ""   # filled after *build
+
+  input:
+    states: [default, focus, filled, error, disabled]
+    penpot_component_id: ""
+
+  card:
+    variants: [default, elevated, outlined]
+    penpot_component_id: ""
+
+  modal:
+    variants: [small, medium, large]
+    sizes:
+      small:  { width: 480 }
+      medium: { width: 640 }
+      large:  { width: 800 }
+    penpot_component_id: ""
+
+  navbar:
+    variants: [top, sidebar]
+    penpot_component_id: ""
+
+  table:
+    penpot_component_id: ""
+
+  # Add project-specific components here
+  custom: []

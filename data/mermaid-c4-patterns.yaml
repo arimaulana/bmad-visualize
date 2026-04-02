@@ -1,0 +1,231 @@
+# Mermaid C4 Diagram Patterns
+# Reference for @arch-visualizer when generating diagrams.
+# Contains syntax examples and conventions for each diagram type.
+
+# -----------------------------------------------------------------------
+# C4 CONTEXT (Level 1)
+# -----------------------------------------------------------------------
+
+c4_context:
+  description: >
+    Shows the software system in the context of the people and other software systems
+    that interact with it. Highest level of abstraction.
+
+  elements:
+    person:
+      syntax: 'Person(alias, "Name", "Description")'
+      example: 'Person(customer, "Customer", "A user of the platform")'
+
+    person_ext:
+      syntax: 'Person_Ext(alias, "Name", "Description")'
+      note: "Use for external users outside the organization"
+
+    system:
+      syntax: 'System(alias, "Name", "Description")'
+      example: 'System(webapp, "Web Application", "Allows users to manage their account")'
+
+    system_ext:
+      syntax: 'System_Ext(alias, "Name", "Description")'
+      example: 'System_Ext(stripe, "Stripe", "Handles payment processing")'
+
+    relationship:
+      syntax: 'Rel(from, to, "Label")'
+      with_tech: 'Rel(from, to, "Label", "Technology")'
+      example: 'Rel(customer, webapp, "Uses", "HTTPS")'
+
+  layout_directive: 'UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")'
+
+  full_example: |
+    ```mermaid
+    C4Context
+      title System Context — Task Manager
+
+      Person(user, "End User", "Manages tasks and projects")
+      Person(admin, "Admin", "Manages users and billing")
+
+      System(app, "Task Manager", "Web application for task management")
+
+      System_Ext(auth, "Auth0", "Identity and authentication provider")
+      System_Ext(email, "SendGrid", "Transactional email delivery")
+      System_Ext(payment, "Stripe", "Subscription billing")
+
+      Rel(user, app, "Uses", "HTTPS")
+      Rel(admin, app, "Administers", "HTTPS")
+      Rel(app, auth, "Authenticates via", "HTTPS/OIDC")
+      Rel(app, email, "Sends emails via", "HTTPS/API")
+      Rel(app, payment, "Processes payments via", "HTTPS/API")
+
+      UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
+    ```
+
+# -----------------------------------------------------------------------
+# C4 CONTAINER (Level 2)
+# -----------------------------------------------------------------------
+
+c4_container:
+  description: >
+    Zooms into the system boundary and shows the containers (applications, databases,
+    microservices) and their interactions.
+
+  elements:
+    container:
+      syntax: 'Container(alias, "Name", "Technology", "Description")'
+      example: 'Container(spa, "Single Page App", "React", "User-facing web application")'
+
+    container_db:
+      syntax: 'ContainerDb(alias, "Name", "Technology", "Description")'
+      example: 'ContainerDb(db, "Database", "PostgreSQL", "Stores all application data")'
+
+    container_queue:
+      syntax: 'ContainerQueue(alias, "Name", "Technology", "Description")'
+      example: 'ContainerQueue(queue, "Event Bus", "Redis Pub/Sub", "Async message queue")'
+
+    system_boundary:
+      syntax: |
+        System_Boundary(alias, "Name") {
+          Container(...)
+        }
+
+    relationship:
+      syntax: 'Rel(from, to, "Label", "Technology")'
+      example: 'Rel(spa, api, "Calls", "HTTPS/JSON")'
+
+  full_example: |
+    ```mermaid
+    C4Container
+      title Container Diagram — Task Manager
+
+      Person(user, "End User", "Uses the web app")
+
+      System_Boundary(app, "Task Manager") {
+        Container(spa, "Web App", "React + TypeScript", "Browser-based SPA")
+        Container(api, "REST API", "Node.js + Express", "Business logic and data access")
+        ContainerDb(db, "Primary Database", "PostgreSQL", "Tasks, projects, users")
+        ContainerDb(cache, "Cache", "Redis", "Sessions and frequently-read data")
+        Container(worker, "Background Worker", "Node.js", "Email sending, scheduled jobs")
+      }
+
+      System_Ext(auth0, "Auth0", "Identity provider")
+      System_Ext(sendgrid, "SendGrid", "Email delivery")
+
+      Rel(user, spa, "Uses", "HTTPS")
+      Rel(spa, api, "Calls", "HTTPS/JSON")
+      Rel(api, db, "Reads/writes", "SQL/TCP")
+      Rel(api, cache, "Reads/writes", "Redis protocol")
+      Rel(api, auth0, "Validates tokens", "HTTPS/JWKS")
+      Rel(worker, sendgrid, "Sends via", "HTTPS/API")
+      Rel(api, worker, "Enqueues jobs", "Redis")
+    ```
+
+# -----------------------------------------------------------------------
+# SEQUENCE DIAGRAMS
+# -----------------------------------------------------------------------
+
+sequence:
+  description: >
+    Shows the order of interactions between participants for a specific flow.
+    Use for critical user journeys, authentication flows, and complex multi-service operations.
+
+  elements:
+    participant:
+      syntax: 'participant Name'
+      with_alias: 'participant A as "Long Name"'
+
+    actor:
+      syntax: 'actor Name'
+      note: "Use actor for humans, participant for systems/services"
+
+    synchronous_call:
+      syntax: 'A->>B: Message'
+      note: "Solid arrow — waits for response"
+
+    async_call:
+      syntax: 'A-)B: Message'
+      note: "Open arrow — fire and forget"
+
+    response:
+      syntax: 'B-->>A: Response'
+      note: "Dashed arrow — indicates response"
+
+    conditional:
+      syntax: |
+        alt Condition Name
+          A->>B: Message
+        else Alternative
+          A->>C: Message
+        end
+
+    loop:
+      syntax: |
+        loop Condition
+          A->>B: Message
+        end
+
+    note:
+      syntax: 'Note over A,B: This is a note'
+      right_of: 'Note right of A: Note'
+
+    activate_deactivate:
+      syntax: |
+        activate B
+        B-->>A: response
+        deactivate B
+
+  conventions:
+    - "List participants in left-to-right order of initiation"
+    - "Always show both request and response arrows"
+    - "Use alt/else blocks for success vs. error paths"
+    - "Use Note for async operations or background processing"
+    - "Actor for users, participant for all technical components"
+
+  full_example: |
+    ```mermaid
+    sequenceDiagram
+      actor User
+      participant Frontend as "React App"
+      participant API as "REST API"
+      participant Auth as "Auth0"
+      participant DB as "PostgreSQL"
+
+      User->>Frontend: Submit login form
+      Frontend->>API: POST /auth/login {email, password}
+      activate API
+      API->>Auth: Validate credentials
+      Auth-->>API: ID token + access token
+
+      alt Valid credentials
+        API->>DB: Upsert user session
+        DB-->>API: Session record
+        API-->>Frontend: 200 OK + JWT
+        deactivate API
+        Frontend-->>User: Redirect to /dashboard
+      else Invalid credentials
+        API-->>Frontend: 401 Unauthorized
+        deactivate API
+        Frontend-->>User: Show error: "Invalid email or password"
+      end
+    ```
+
+# -----------------------------------------------------------------------
+# GENERAL CONVENTIONS
+# -----------------------------------------------------------------------
+
+conventions:
+  naming:
+    - "Use PascalCase for aliases (e.g., WebApp, ApiServer)"
+    - "Use clear, non-technical labels for relationships when audience includes non-developers"
+    - "Include technology in Container diagrams, omit in Context diagrams"
+
+  relationships:
+    - "Always label relationships — never use unlabeled arrows"
+    - "Include protocol for technical relationships (HTTPS, SQL, gRPC, etc.)"
+    - "Direction: left-to-right or top-to-bottom for clarity"
+
+  boundaries:
+    - "Only one System_Boundary in Container diagrams (the system being described)"
+    - "External systems always outside the boundary"
+
+  scope:
+    - "C4 L1: what the system does, who uses it, what it depends on"
+    - "C4 L2: how the system is structured internally"
+    - "Sequence: what happens step-by-step for a specific scenario"
