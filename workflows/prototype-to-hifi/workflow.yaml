@@ -1,5 +1,5 @@
-id: validated-to-hifi
-name: Validated to Hi-Fi
+id: prototype-to-hifi
+name: Prototype to Hi-Fi
 module: ux-visualizer
 description: >
   Phase 2 workflow — runs after ux-to-prototype (lo-fi path) reaches PROCEED.

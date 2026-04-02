@@ -35,9 +35,9 @@ fidelity:
   lo-fi:
     description: >
       Prototype focuses on flow and structure only. Visual design is basic.
-      After UX is validated and feedback is safe, run the validated-to-hifi workflow
+      After UX is validated and feedback is safe, run the prototype-to-hifi workflow
       to polish UI and produce a production-ready prototype — in parallel with system design.
-    on_proceed: validated-to-hifi workflow
+    on_proceed: prototype-to-hifi workflow
 
   hi-fi:
     description: >
@@ -131,7 +131,7 @@ steps:
     agent: ux-prototyper
     depends_on: [validation-gate]
     note: >
-      Lo-fi + PROCEED → hand off to validated-to-hifi workflow.
+      Lo-fi + PROCEED → hand off to prototype-to-hifi workflow.
       Hi-fi + PROCEED → hand off to BMAD Story Agent directly.
 
 feedback_loop:
@@ -151,7 +151,7 @@ feedback_loop:
 on_complete:
   doc-first:
     lo-fi: >
-      UX validated. Hand off to validated-to-hifi workflow.
+      UX validated. Hand off to prototype-to-hifi workflow.
       Share docs/prototype-validation.md and Penpot share link as inputs.
       Run BMAD Architect agent in parallel if architecture doc is not yet available.
     hi-fi: >
@@ -160,9 +160,9 @@ on_complete:
       Include docs/arch-diagrams.md if Step 2 was run.
   prototype-first:
     lo-fi: >
-      UX validated. Hand off to validated-to-hifi workflow.
+      UX validated. Hand off to prototype-to-hifi workflow.
       Share docs/prototype-validation.md and Penpot share link as inputs.
-      Run BMAD PM agent (PRD) and Architect agent in parallel with validated-to-hifi.
+      Run BMAD PM agent (PRD) and Architect agent in parallel with prototype-to-hifi.
     hi-fi: >
       Prototype validated. Next: run BMAD PM agent to write PRD from the validated prototype,
       then BMAD Architect agent to write architecture doc.

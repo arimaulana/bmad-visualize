@@ -16,23 +16,23 @@ Check `prototype-spec.yaml → fidelity` to determine the handoff path.
 
 ### PROCEED — Lo-fi
 
-UX is validated. Do not hand off to Story Agent yet. Hand off to the `validated-to-hifi` workflow.
+UX is validated. Do not hand off to Story Agent yet. Hand off to the `prototype-to-hifi` workflow.
 
-**Handoff package for validated-to-hifi:**
+**Handoff package for prototype-to-hifi:**
 - `docs/prototype-validation.md` — validation report with share link
 - `docs/design-system.md` — current design system (to be extended in Phase 2)
 - `prototype-spec.yaml` — spec with all screen and flow definitions
 - `design-system-spec.yaml` — current token and component spec (to be finalized in Phase 2)
 - Penpot prototype file ID — screens to be rebuilt hi-fi in Phase 2
 
-**Parallel actions to trigger alongside validated-to-hifi:**
+**Parallel actions to trigger alongside prototype-to-hifi:**
 
 | Mode | Parallel action |
 |---|---|
 | doc-first | Run BMAD Architect agent if `_bmad-output/planning-artifacts/architecture.md` is not yet available |
 | prototype-first | Run BMAD PM agent (PRD) + BMAD Architect agent — both can start from the validated prototype |
 
-These run in parallel with `validated-to-hifi`. Story Agent starts only after all three are done.
+These run in parallel with `prototype-to-hifi`. Story Agent starts only after all three are done.
 
 ---
 
@@ -96,5 +96,5 @@ Each revision cycle should be noted in `docs/prototype-validation.md`:
 When PROCEED is reached:
 - This workflow instance is closed
 - The `ux-to-prototype` workflow is marked complete
-- Lo-fi: proceed to `validated-to-hifi` workflow
+- Lo-fi: proceed to `prototype-to-hifi` workflow
 - Hi-fi: proceed to BMAD Epic and Story creation using the validated prototype as visual reference

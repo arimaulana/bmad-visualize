@@ -113,7 +113,7 @@ Show the user a clear summary before proceeding. Format:
 - ...
 
 **Deferred to Phase 2 (lo-fi only):**
-- [components or visual decisions deferred to validated-to-hifi workflow]
+- [components or visual decisions deferred to prototype-to-hifi workflow]
 
 **Deferred (out of scope for this prototype):**
 - [anything the user said to exclude or defer]
