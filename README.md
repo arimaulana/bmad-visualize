@@ -108,18 +108,20 @@ Replace with your actual Penpot URL and token (see step 4 for how to get the tok
 
 ### 5. Configure the Penpot MCP server
 
-Add the Penpot MCP to your Claude Code settings. Choose one option:
-
-**Option A — ancrz/penpot-mcp-server (REST API, no browser extension needed)**
+> **Warning:** There are multiple `penpot-mcp-server` packages on npm and they are not the same. The unscoped `penpot-mcp-server` (no `@` prefix) is **read-only** — it cannot create content in Penpot. Use one of the scoped packages below.
 
 Add to `~/.claude/settings.json` (global) or `.claude/settings.json` (project-level):
+
+**Option A — `@ancrz/penpot-mcp-server` (recommended — Python, 68 tools, full write support)**
+
+Requires `uv`: `brew install uv`
 
 ```json
 {
   "mcpServers": {
     "penpot": {
-      "command": "npx",
-      "args": ["-y", "penpot-mcp-server"],
+      "command": "uvx",
+      "args": ["@ancrz/penpot-mcp-server"],
       "env": {
         "PENPOT_BASE_URL": "http://localhost:9001",
         "PENPOT_ACCESS_TOKEN": "your-token-here"
@@ -129,7 +131,24 @@ Add to `~/.claude/settings.json` (global) or `.claude/settings.json` (project-le
 }
 ```
 
-**Option B — official @penpot/mcp (requires browser extension running in Penpot)**
+**Option B — `@zcubekr/penpot-mcp-server` (Node.js, write support)**
+
+```json
+{
+  "mcpServers": {
+    "penpot": {
+      "command": "npx",
+      "args": ["-y", "@zcubekr/penpot-mcp-server"],
+      "env": {
+        "PENPOT_BASE_URL": "http://localhost:9001",
+        "PENPOT_ACCESS_TOKEN": "your-token-here"
+      }
+    }
+  }
+}
+```
+
+**Option C — `@penpot/mcp` (official, requires browser extension)**
 
 ```json
 {

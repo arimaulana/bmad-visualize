@@ -5,11 +5,13 @@
     ".claude/settings.json    (project-level — only this project)"
   ],
 
+  "_warning": "The unscoped 'penpot-mcp-server' package (no @ prefix) is READ-ONLY. It cannot create or modify content. Use one of the options below instead.",
+
   "mcpServers": {
     "penpot": {
-      "_comment_option_a": "Option A: ancrz/penpot-mcp-server — REST API, no browser extension needed",
-      "command": "npx",
-      "args": ["-y", "penpot-mcp-server"],
+      "_comment": "Option A: @ancrz/penpot-mcp-server — Python, 68 tools, full write support (recommended)",
+      "command": "uvx",
+      "args": ["@ancrz/penpot-mcp-server"],
       "env": {
         "PENPOT_BASE_URL": "http://localhost:9001",
         "PENPOT_ACCESS_TOKEN": "REPLACE_WITH_YOUR_TOKEN"
@@ -18,7 +20,19 @@
   },
 
   "_option_b": {
-    "_comment": "Option B: official @penpot/mcp — requires browser extension running in Penpot",
+    "_comment": "Option B: @zcubekr/penpot-mcp-server — Node.js, write support, no extra runtime needed",
+    "penpot": {
+      "command": "npx",
+      "args": ["-y", "@zcubekr/penpot-mcp-server"],
+      "env": {
+        "PENPOT_BASE_URL": "http://localhost:9001",
+        "PENPOT_ACCESS_TOKEN": "REPLACE_WITH_YOUR_TOKEN"
+      }
+    }
+  },
+
+  "_option_c": {
+    "_comment": "Option C: @penpot/mcp (official) — arbitrary code execution via browser extension",
     "penpot": {
       "command": "npx",
       "args": ["-y", "@penpot/mcp"],
