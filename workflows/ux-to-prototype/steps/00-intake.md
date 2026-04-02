@@ -5,13 +5,26 @@
 
 ## What Happens Here
 
-`@ux-prototyper` reads the brainstorm doc, runs a structured elicitation session with the user, then infers and confirms the full prototype spec before any building begins.
+`@ux-prototyper` reads the brainstorm doc and any available supplementary docs, runs a structured elicitation session with the user, then infers and confirms the full prototype spec before any building begins.
 
 This is the most important step in prototype-first mode. Every decision made here shapes the entire prototype. Getting this right is cheaper than rebuilding screens later.
 
 Two phases — do not skip or merge them:
 1. **Elicitation** — ask before inferring
 2. **Inference + Confirmation** — generate spec, get explicit approval
+
+---
+
+## Before Starting: Check for Supplementary Docs
+
+Before asking elicitation questions, check if any of these docs exist. If found, read them — they reduce the number of questions needed and improve inference quality.
+
+| Document | Path | What to extract |
+|---|---|---|
+| Product Brief | `_bmad-output/planning-artifacts/product-brief.md` | Problem space, target users, success definition, constraints |
+| PRD | `_bmad-output/planning-artifacts/PRD.md` | Feature list, behaviour rules, edge cases, business requirements |
+
+Note which docs were found and which questions can be skipped or pre-filled from them. Tell the user upfront: "I found [doc], so I already know [X] — I'll only ask about what's still unclear."
 
 ---
 
@@ -23,7 +36,12 @@ Read whatever the user has provided — paragraph, bullet points, rough notes, s
 
 ### Ask the Elicitation Questions
 
-Present all questions in one message. Do not ask one at a time. Group them clearly so the user can answer efficiently.
+Present all questions in one message. Skip any question already answered by the supplementary docs. Group them clearly so the user can answer efficiently.
+
+**Fidelity**
+- Is this prototype for UX validation first (lo-fi — focus on flows and structure, visual is basic), or should it be production-ready from the start (hi-fi)?
+  - **Lo-fi**: after UX is validated and feedback is safe, we run a second phase to polish the UI and finalize the design system — in parallel with system design.
+  - **Hi-fi**: one phase, prototype is production-quality from the start.
 
 **Users & Access**
 - Who are the primary users of this product? Describe them specifically.
@@ -47,7 +65,7 @@ Present all questions in one message. Do not ask one at a time. Group them clear
 - What device sizes must the prototype cover?
 - Is there an existing brand or visual style to follow? Colors, fonts, tone?
 
-**Business & Constraints**
+**Business & Constraints** *(skip if answered by product brief or PRD)*
 - What does success look like from a business perspective for this flow?
 - Are there any hard constraints — legal, compliance, technical — that affect what can be shown in the UI?
 - Is there anything this prototype must NOT include or suggest?
@@ -60,11 +78,14 @@ After the user answers, do the following:
 
 ### Generate the Spec
 
-Using the brainstorm doc + elicitation answers, populate:
-- `templates/prototype-spec.yaml` — screens and flows sections
-- `templates/design-system-spec.yaml` — tone, platform, and token overrides
+Using the brainstorm doc + supplementary docs + elicitation answers, populate:
+- `templates/prototype-spec.yaml` — screens, flows, fidelity field
+- `templates/design-system-spec.yaml` — tone, platform, token overrides
 
 Use `data/design-tokens.yaml` defaults for any visual values not specified by the user.
+
+For **lo-fi**: set minimal token values, flag complex components as deferred to Phase 2.
+For **hi-fi**: populate full token set and complete component list.
 
 ### Present Confirmation Summary
 
@@ -73,10 +94,14 @@ Show the user a clear summary before proceeding. Format:
 ---
 
 **Project:** [name]
+**Mode:** prototype-first
+**Fidelity:** lo-fi | hi-fi
 **Platform:** [web | mobile | both]
 **Visual tone:** [e.g., minimal & professional]
 **Primary color:** [hex if specified, or "default from design-tokens.yaml"]
 **Font:** [font family if specified, or default]
+
+**Supplementary docs used:** [list any product-brief.md / PRD.md that were read]
 
 **Screens ([n] total):**
 - [Screen Name] — [one-line description]
@@ -86,6 +111,9 @@ Show the user a clear summary before proceeding. Format:
 **Flows ([n] total):**
 - [Flow Name]: [Source Screen] → [Target Screen] via [trigger element]
 - ...
+
+**Deferred to Phase 2 (lo-fi only):**
+- [components or visual decisions deferred to validated-to-hifi workflow]
 
 **Deferred (out of scope for this prototype):**
 - [anything the user said to exclude or defer]
@@ -103,12 +131,14 @@ If the user corrects something, update `prototype-spec.yaml` and `design-system-
 
 ## Checklist Before Moving to Step 1
 
+- [ ] Supplementary docs checked — found docs noted, questions skipped accordingly
+- [ ] Fidelity confirmed: lo-fi or hi-fi
 - [ ] All elicitation questions answered (or user explicitly deferred specific items)
-- [ ] `prototype-spec.yaml` → screens and flows fully populated
+- [ ] `prototype-spec.yaml` → screens, flows, and fidelity field fully populated
 - [ ] `design-system-spec.yaml` → tone, platform, token overrides populated
 - [ ] Confirmation summary shown and explicitly approved by user
 - [ ] Open questions listed and user has acknowledged them
-- [ ] Nothing inferred without basis — all spec decisions traceable to brainstorm or elicitation answers
+- [ ] Nothing inferred without basis — all spec decisions traceable to docs or elicitation answers
 
 ## Proceed To
 

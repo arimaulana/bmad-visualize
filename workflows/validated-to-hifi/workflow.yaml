@@ -1,0 +1,63 @@
+id: validated-to-hifi
+name: Validated to Hi-Fi
+module: ux-visualizer
+description: >
+  Phase 2 workflow — runs after ux-to-prototype (lo-fi path) reaches PROCEED.
+  Takes a UX-validated lo-fi prototype and produces a production-ready hi-fi prototype.
+  Runs in parallel with BMAD Architect agent (system design) and BMAD PM agent (PRD, prototype-first only).
+  Story Agent starts only after this workflow and all parallel BMAD agents are complete.
+
+inputs:
+  required:
+    - docs/prototype-validation.md         # from ux-to-prototype Phase 1
+    - docs/design-system.md                # current design system doc
+    - templates/prototype-spec.yaml        # with all screens, flows, fidelity=lo-fi
+    - templates/design-system-spec.yaml    # current token and component spec
+  optional:
+    - _bmad-output/planning-artifacts/product-brief.md
+    - _bmad-output/planning-artifacts/PRD.md
+    - _bmad-output/planning-artifacts/architecture.md   # may arrive mid-workflow from parallel Architect agent
+
+parallel_context: >
+  This workflow runs in parallel with:
+  - BMAD Architect agent → _bmad-output/planning-artifacts/architecture.md (both modes)
+  - BMAD PM agent → _bmad-output/planning-artifacts/PRD.md (prototype-first only)
+  These do not need to complete before this workflow finishes.
+  Story Agent waits for all of them.
+
+steps:
+  - id: ui-polish
+    name: UI Polish
+    file: steps/01-ui-polish.md
+    agents: [design-system-builder, ux-prototyper]
+    note: >
+      Finalize design tokens, extend design system to production-ready,
+      rebuild all screens in Penpot with final visual design.
+      Runs in parallel: design-system-builder on design system, ux-prototyper on screens.
+
+  - id: final-validation
+    name: Final Validation
+    file: steps/02-final-validation.md
+    agent: ux-prototyper
+    depends_on: [ui-polish]
+    output: docs/hifi-validation.md
+
+feedback_loop:
+  condition: final_validation == REVISE
+  return_to:
+    - ui-polish   # rebuild screens or extend design system
+  note: >
+    Minor visual fixes → fix directly in Penpot, re-run final-validation.
+    Design system gaps → re-run ui-polish from design-system-builder side.
+    Screen layout issues → re-run ui-polish from ux-prototyper side.
+
+on_complete:
+  handoff: >
+    Hi-fi prototype validated. Wait for BMAD Architect agent and BMAD PM agent (if prototype-first)
+    to complete before handing off to Story Agent.
+    Handoff package for Story Agent:
+    - docs/hifi-validation.md — final validation report with hi-fi share link
+    - docs/design-system.md — finalized production design system
+    - docs/prototype-validation.md — original UX validation report (Phase 1)
+    - _bmad-output/planning-artifacts/architecture.md — from parallel Architect agent
+    - _bmad-output/planning-artifacts/PRD.md — from parallel PM agent (prototype-first only)

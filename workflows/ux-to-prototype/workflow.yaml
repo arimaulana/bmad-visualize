@@ -4,29 +4,46 @@ module: ux-visualizer
 description: >
   Full workflow from BMAD documents (or a brainstorm) to a clickable Penpot prototype.
   Supports two modes: doc-first and prototype-first.
+  Supports two fidelity paths: lo-fi (UX validation first, UI polish later) and hi-fi (production-ready from the start).
   Covers design system, screen building, interaction wiring, and validation gate — before Epic & Stories.
 
 modes:
   doc-first:
     description: >
       Start from existing BMAD documents. UX spec is required.
-      PRD and architecture docs are optional.
+      Product brief, PRD, and architecture doc are optional — use whatever is available.
     required_inputs:
       - docs/ux-spec.md
     optional_inputs:
-      - docs/prd.md
-      - docs/architecture.md
-      - docs/system-design.md
-      - docs/tech-stack.md
+      - _bmad-output/planning-artifacts/product-brief.md
+      - _bmad-output/planning-artifacts/PRD.md
+      - _bmad-output/planning-artifacts/architecture.md
 
   prototype-first:
     description: >
       Start from a brainstorm doc (free-form notes, bullet points, rough ideas).
       No UX spec, PRD, or architecture doc needed upfront.
       Agent runs elicitation first, then infers the full spec before building.
+      Product brief and PRD are used as supplementary context if available.
     required_inputs:
-      - docs/brainstorm.md   # any free-form document describing the idea
-    optional_inputs: []
+      - docs/brainstorm.md
+    optional_inputs:
+      - _bmad-output/planning-artifacts/product-brief.md
+      - _bmad-output/planning-artifacts/PRD.md
+
+fidelity:
+  lo-fi:
+    description: >
+      Prototype focuses on flow and structure only. Visual design is basic.
+      After UX is validated and feedback is safe, run the validated-to-hifi workflow
+      to polish UI and produce a production-ready prototype — in parallel with system design.
+    on_proceed: validated-to-hifi workflow
+
+  hi-fi:
+    description: >
+      Prototype is production-ready from the start.
+      Design system is fully built, screens are polished, one validation cycle.
+    on_proceed: hand off to Story Agent directly
 
 steps:
 
@@ -37,10 +54,11 @@ steps:
     agent: ux-prototyper
     mode: prototype-first
     note: >
-      Agent reads brainstorm doc, runs structured elicitation with the user,
-      then infers and confirms prototype-spec.yaml and design-system-spec.yaml
-      before any building begins. User must explicitly approve the spec summary
-      before this step is marked complete.
+      Agent reads brainstorm doc (and product brief / PRD if available),
+      runs structured elicitation with the user,
+      asks fidelity question (lo-fi or hi-fi),
+      then infers and confirms prototype-spec.yaml and design-system-spec.yaml.
+      User must explicitly approve the spec summary before this step is marked complete.
 
   # ── Both modes ────────────────────────────────────────────────────────
   - id: analyze
@@ -51,8 +69,8 @@ steps:
       doc-first: []
       prototype-first: [intake]
     note: >
-      Doc-first: all three agents analyze source docs in parallel.
-      Prototype-first: agents do a review pass on the spec populated in Step 0.
+      Doc-first: agents analyze source docs in parallel. Asks fidelity question before proceeding.
+      Prototype-first: agents do a review pass on the spec from Step 0. Fidelity already set in Step 0.
       arch-visualizer is skipped in prototype-first mode.
 
   # ── Doc-first only (optional even in doc-first) ───────────────────────
@@ -61,12 +79,12 @@ steps:
     file: steps/02-arch-diagrams.md
     agent: arch-visualizer
     mode: doc-first
-    skip_if: architecture docs not available
+    skip_if: architecture doc not available
     depends_on: [analyze]
     output: docs/arch-diagrams.md
     note: >
       Runs in parallel with design-system step.
-      Skip entirely if architecture docs are not available.
+      Skip entirely if _bmad-output/planning-artifacts/architecture.md is not available.
 
   # ── Both modes ────────────────────────────────────────────────────────
   - id: design-system
@@ -78,7 +96,8 @@ steps:
       - Penpot Design System file
       - docs/design-system.md
     note: >
-      Runs in parallel with arch-diagrams (doc-first) or immediately after analyze (prototype-first).
+      Lo-fi: build minimal design system — base tokens and 6 core components only.
+      Hi-fi: build full production-ready design system with complete token set and all variants.
 
   - id: build-screens
     name: Build Prototype Screens
@@ -111,6 +130,9 @@ steps:
     file: steps/07-revise-or-proceed.md
     agent: ux-prototyper
     depends_on: [validation-gate]
+    note: >
+      Lo-fi + PROCEED → hand off to validated-to-hifi workflow.
+      Hi-fi + PROCEED → hand off to BMAD Story Agent directly.
 
 feedback_loop:
   condition: validation_gate == REVISE
@@ -120,7 +142,6 @@ feedback_loop:
     - build-screens # if only screens need rebuilding
     - wire-flows    # if only interactions are wrong
   note: >
-    The agent identifies the re-entry point based on the nature of the revision.
     Doc-level changes → restart from analyze.
     Screen-level changes → restart from build-screens.
     Interaction-only fixes → restart from wire-flows.
@@ -129,13 +150,20 @@ feedback_loop:
 
 on_complete:
   doc-first:
-    handoff: >
+    lo-fi: >
+      UX validated. Hand off to validated-to-hifi workflow.
+      Share docs/prototype-validation.md and Penpot share link as inputs.
+      Run BMAD Architect agent in parallel if architecture doc is not yet available.
+    hi-fi: >
       Prototype validated. Hand off to BMAD Story and Epic agents.
-      Share docs/prototype-validation.md and the Penpot share link.
+      Share docs/prototype-validation.md and Penpot share link.
       Include docs/arch-diagrams.md if Step 2 was run.
   prototype-first:
-    handoff: >
+    lo-fi: >
+      UX validated. Hand off to validated-to-hifi workflow.
+      Share docs/prototype-validation.md and Penpot share link as inputs.
+      Run BMAD PM agent (PRD) and Architect agent in parallel with validated-to-hifi.
+    hi-fi: >
       Prototype validated. Next: run BMAD PM agent to write PRD from the validated prototype,
       then BMAD Architect agent to write architecture doc.
-      Share docs/prototype-validation.md and the Penpot share link as inputs to the PM agent.
       After PRD and architecture are complete, proceed to BMAD Story and Epic agents.
